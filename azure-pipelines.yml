@@ -1,0 +1,50 @@
+
+trigger:
+  - main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+  # Install Java 17
+  - task: JavaToolInstaller@0
+    displayName: 'Set up Java 17'
+    inputs:
+      versionSpec: '17'
+      jdkArchitectureOption: 'x64'
+      jdkSourceOption: 'PreInstalled'
+
+  # Build Java backend using Maven
+  - script: |
+      cd backend/backend
+      mvn clean package
+    displayName: 'Build Backend using Maven'
+
+  # Install Node.js
+  - task: NodeTool@0
+    displayName: 'Set up Node.js'
+    inputs:
+      versionSpec: '20.x'
+
+  # Build React frontend
+  - script: |
+      cd frontend
+      npm ci
+      npm run build
+    displayName: 'Build Frontend using npm'
+
+  # Publish backend WAR
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish Backend WAR'
+    inputs:
+      PathtoPublish: 'backend/backend/target'
+      ArtifactName: 'backend-war'
+      publishLocation: 'Container'
+
+  # Publish frontend build
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish Frontend Build'
+    inputs:
+      PathtoPublish: 'frontend/dist'
+      ArtifactName: 'frontend-build'
+      publishLocation: 'Container'
