@@ -45,6 +45,6 @@ steps:
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Frontend Build'
     inputs:
-      PathtoPublish: 'frontend/dist'
+      PathtoPublish: 'frontend/.output'
       ArtifactName: 'frontend-build'
       publishLocation: 'Container'
